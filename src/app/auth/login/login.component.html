@@ -1,8 +1,10 @@
-<!-- <div class="flex items-center w-screen justify-center min-h-screen bg-gray-100">
+<div class="flex items-center w-screen justify-center min-h-screen bg-gray-100">
   <div class="w-96 p-8 bg-white border rounded-lg shadow-lg">
     <h2 class="text-3xl font-bold text-center mb-6">Login</h2>
     
-    <form (submit)="login()" class="space-y-4">
+    <!-- (submit)="login()"  -->
+    <form 
+    class="space-y-4">
       <div>
         <label for="email" class="block text-sm font-semibold mb-1">Email</label>
         <input
@@ -34,8 +36,9 @@
         Login
       </button>
     </form>
-    
-    <p *ngIf="errorMessage" class="mt-4 text-sm text-center text-red-600">{{ errorMessage }}</p>
+    @if(errorMessage){
+      <p  class="mt-4 text-sm text-center text-red-600">{{ errorMessage }}</p>
+    }
     
     <button
       (click)="googleLogin()"
@@ -44,10 +47,6 @@
       Login with Google
     </button>
   </div>
-</div> -->
-
-
-<div class="login-container">
-  <button (click)="googleLogin()">Login with Google</button>
-  <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
 </div>
+
+

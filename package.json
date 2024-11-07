@@ -19,6 +19,7 @@
     "@angular/platform-browser": "^17.3.0",
     "@angular/platform-browser-dynamic": "^17.3.0",
     "@angular/router": "^17.3.0",
+    "@emailjs/browser": "^4.4.1",
     "@fullcalendar/angular": "^6.1.15",
     "@fullcalendar/bootstrap": "^6.1.11",
     "@fullcalendar/common": "^5.11.5",

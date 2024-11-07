@@ -1,27 +1,44 @@
-<p>add-event works!</p>
-<div class="button">
-    <button (click)="setAvailableSlots()">Set Availability</button>
-    <button>Create Group Session</button>
-    <button (click)="setBlock()">Set Blockout Day</button>
-  </div>
-  
-  <div class="container-fluid">
-    <div class="row">
-      <ng-template #fullCalendarTemplate>
-        <full-calendar #calendar [options]="calendarOptions"></full-calendar>
-      </ng-template>
-      <!-- @if(isMobile) {
-        <div class="col-sm-12 col-md-8">
-            <full-calendar #calendar [options]="calendarOptions" [style.height.px]="500"></full-calendar>
+<div class="p-10">
+  @if(showModal){
+    <div class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50" (click)="closeModal()">
+      <div class="bg-white p-6 rounded-lg w-full max-w-sm" (click)="$event.stopPropagation()">
+        <h2 class="text-2xl font-semibold mb-4">Create Event</h2>
+        <form (ngSubmit)="onSubmit()">
+          <div class="mb-4">
+            <label for="eventTitle" class="block text-sm font-medium text-gray-700">Event Title:</label>
+            <input type="text" id="eventTitle" [(ngModel)]="modalData.title" name="title" required class="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
           </div>
-      }
-      @else {
-        <div class="col-sm-12 col-md-8" >
-            <full-calendar #calendar [options]="calendarOptions" [style.height.px]="500"></full-calendar>
+    
+          <div class="mb-4">
+            <label for="startTime" class="block text-sm font-medium text-gray-700">Start Time (HH:mm):</label>
+            <input type="text" id="startTime" [(ngModel)]="modalData.startTime" name="startTime" required class="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
           </div>
-      } -->
-      <!-- <div class="col-sm-12 col-md-8" *ngIf="isMobile; else fullCalendarTemplate">
-        <full-calendar #calendar [options]="calendarOptions" [style.height.px]="500"></full-calendar>
-      </div> -->
+    
+          <div class="mb-6">
+            <label for="endTime" class="block text-sm font-medium text-gray-700">End Time (HH:mm):</label>
+            <input type="text" id="endTime" [(ngModel)]="modalData.endTime" name="endTime" required class="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+
+          <div class="mb-6">
+            <label for="endTime" class="block text-sm font-medium text-gray-700">Add Guest</label>
+            <input type="text" id="email" [(ngModel)]="modalData.email" name="email" required class="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+
+    
+          <div class="flex justify-between">
+            <button type="button" (click)="closeModal()" class="px-6 py-2 bg-red-500 text-white rounded-md hover:bg-red-400 focus:outline-none">Cancel</button>
+            <button type="submit" class="px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-400 focus:outline-none">Create Event</button>
+          </div>
+        </form>
+      </div>
     </div>
-  </div>
+    
+  }
+  
+    <div class="calendar-container">
+      <full-calendar
+        #calendar
+        [options]="calendarOptions">
+      </full-calendar>
+    </div>
+</div>
