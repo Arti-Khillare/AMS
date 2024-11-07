@@ -13,8 +13,8 @@ import { AuthService } from '../auth.service';
 })
 export class LoginComponent {
   errorMessage: string = '';
-  email: string = '';    // Declare email property
-  password: string = ''; // Declare password property
+  email: string = '';    
+  password: string = ''; 
   constructor(private authService: AuthService) {}
 
   // Google login

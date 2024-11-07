@@ -47,8 +47,8 @@ export class AuthService {
 
   // Logout
   logout(): void {
-    localStorage.removeItem(this.USER_KEY); // Remove user data from localStorage
-    this.loggedIn.next(false); // Set logged-in state to false
-    this.router.navigate(['/login']); // Navigate to login page
+    localStorage.removeItem(this.USER_KEY); 
+    this.loggedIn.next(false); 
+    this.router.navigate(['/login']); 
   }
 }
