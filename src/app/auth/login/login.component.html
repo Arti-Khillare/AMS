@@ -1,0 +1,53 @@
+<!-- <div class="flex items-center w-screen justify-center min-h-screen bg-gray-100">
+  <div class="w-96 p-8 bg-white border rounded-lg shadow-lg">
+    <h2 class="text-3xl font-bold text-center mb-6">Login</h2>
+    
+    <form (submit)="login()" class="space-y-4">
+      <div>
+        <label for="email" class="block text-sm font-semibold mb-1">Email</label>
+        <input
+          id="email"
+          type="email"
+          [(ngModel)]="email"
+          name="email"
+          required
+          class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+      
+      <div>
+        <label for="password" class="block text-sm font-semibold mb-1">Password</label>
+        <input
+          id="password"
+          type="password"
+          [(ngModel)]="password"
+          name="password"
+          required
+          class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+      
+      <button
+        type="submit"
+        class="w-full py-2 mt-4 text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
+      >
+        Login
+      </button>
+    </form>
+    
+    <p *ngIf="errorMessage" class="mt-4 text-sm text-center text-red-600">{{ errorMessage }}</p>
+    
+    <button
+      (click)="googleLogin()"
+      class="w-full mt-6 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors"
+    >
+      Login with Google
+    </button>
+  </div>
+</div> -->
+
+
+<div class="login-container">
+  <button (click)="googleLogin()">Login with Google</button>
+  <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+</div>
