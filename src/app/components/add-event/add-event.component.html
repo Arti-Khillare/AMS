@@ -2,43 +2,106 @@
   @if(showModal) {
     <div>
       <div class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50" (click)="closeModal()">
-        <div class="bg-white p-6 rounded-lg w-full max-w-sm" (click)="$event.stopPropagation()">
-          <h2 class="text-2xl font-semibold mb-4">Create Event</h2>
-          <form (ngSubmit)="onSubmit()">
+        <div class="bg-white p-6 rounded-lg w-full max-w-sm relative" (click)="$event.stopPropagation()">
+          <h2 class="text-2xl font-semibold mb-4">{{ isEditMode ? 'Edit Event' : 'Create Event' }}</h2>
+          <form (ngSubmit)="onSubmit()" #eventForm="ngForm">
+            
+            <!-- Event Title Field -->
             <div class="mb-4">
               <label for="eventTitle" class="block text-sm font-medium text-gray-700">Event Title:</label>
-              <input type="text" id="eventTitle" [(ngModel)]="modalData.title" name="title" required class="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <div class="relative">
+                <span class="material-icons absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">event</span>
+                <input type="text" id="eventTitle" [(ngModel)]="modalData.title" name="title" required 
+                #title="ngModel"   class="pl-10 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+              </div>
+              @if(title.touched && title.invalid){
+              <div  class="text-red-500 text-sm mt-1">
+                @if(title.errors?.['required']){
+                  <div>Please enter an event title</div>
+                }
+              </div>
+              }
             </div>
-      
+    
+            <!-- Start Time Field -->
             <div class="mb-4">
-              <label for="startTime" class="block text-sm font-medium text-gray-700">Start Time (HH:mm):</label>
-              <input type="text" id="startTime" [(ngModel)]="modalData.startTime" name="startTime" required class="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <label for="startTime" class="block text-sm font-medium text-gray-700">Start Time:</label>
+              <div class="relative">
+                <span class="material-icons absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">access_time</span>
+                <input type="time" id="startTime" [(ngModel)]="modalData.startTime" name="startTime" required 
+                #startTime="ngModel"   class="pl-10 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+              </div>
+              @if(startTime.touched && startTime.invalid){
+                <div  class="text-red-500 text-sm mt-1">
+                  @if(startTime.errors?.['required']){
+                    <div>Please enter a start time</div>
+                  }
+                </div>
+                }
             </div>
-      
+    
+            <!-- End Time Field -->
             <div class="mb-6">
-              <label for="endTime" class="block text-sm font-medium text-gray-700">End Time (HH:mm):</label>
-              <input type="text" id="endTime" [(ngModel)]="modalData.endTime" name="endTime" required class="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <label for="endTime" class="block text-sm font-medium text-gray-700">End Time:</label>
+              <div class="relative">
+                <span class="material-icons absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">access_time</span>
+                <input type="time" id="endTime" [(ngModel)]="modalData.endTime" name="endTime" required 
+                #endTime="ngModel"      class="pl-10 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+              </div>
+              @if(endTime.touched && endTime.invalid) {
+              <div  class="text-red-500 text-sm mt-1">
+                @if(endTime.errors?.['required']){
+                  <div>Please enter an end time</div>
+                }
+              </div>
+              }
             </div>
-  
+    
+            <!-- Add Guest Field -->
             <div class="mb-6">
-              <label for="email" class="block text-sm font-medium text-gray-700">Add Guest</label>
-              <input type="text" id="email" [(ngModel)]="modalData.email" name="email" required class="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <label for="email" class="block text-sm font-medium text-gray-700">Add Guest:</label>
+              <div class="relative">
+                <span class="material-icons absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">person_add</span>
+                <input type="email" id="email" [(ngModel)]="modalData.email" name="email" required 
+                #email="ngModel" class="pl-10 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+              </div>
+              @if(email.touched && email.invalid){
+              <div  class="text-red-500 text-sm mt-1">
+                @if(email.errors?.['required']){
+                  <div>Please enter an email address</div>
+                }
+              </div>
+              }
             </div>
-      
+    
+            <!-- Action Buttons -->
             <div class="flex justify-between">
               <button type="button" (click)="closeModal()" class="px-6 py-2 bg-red-500 text-white rounded-md hover:bg-red-400 focus:outline-none">Cancel</button>
-              <button type="submit" class="px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-400 focus:outline-none">Create Event</button>
+              <button type="submit" [disabled]="eventForm.invalid" class="px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-400 focus:outline-none">
+                {{ isEditMode ? 'Update Event' : 'Create Event' }}
+              </button>
             </div>
           </form>
+          @if(errorMessages.length > 0){
+          <div class="error-messages text-red-500 text-sm ">
+            <ul>
+              @for(error of errorMessages; track error){
+              <li>{{ error }}</li>
+              }
+            </ul>
+          </div>
+        }
         </div>
       </div>
     </div>
+    
   }
   
   <div class="calendar-container">
     <full-calendar
       #calendar
-      [options]="calendarOptions">
+      [options]="calendarOptions"
+      >
     </full-calendar>
   </div>
 </div>

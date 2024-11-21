@@ -1,0 +1,78 @@
+ <div class="flex items-center w-screen justify-center min-h-screen bg-gray-100">
+    <div class="w-96 p-8 bg-white border rounded-lg shadow-lg">
+      <h2 class="text-3xl font-bold text-center mb-6">SignUp</h2>
+      <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" class="space-y-4">
+
+        <div>
+            <label for="username" class="block text-sm font-semibold mb-1">Username</label>
+            <input
+              id="username"
+              formControlName="username"
+              type="text"
+              class="form-control w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            @if(signupForm.get('username')?.touched && signupForm.get('username')?.invalid) {
+                <div>
+                    @if(signupForm.get('username')?.hasError('required')){
+                        <small class=" text-red-600">Username is required.</small>
+                    }
+                    @if(signupForm.get('username')?.hasError('minlength')){
+                        <small class=" text-red-600">Minimum 3 characters required.</small>
+                    }
+                </div>
+                }
+          </div>
+        <div>
+          <label for="email" class="block text-sm font-semibold mb-1">Email</label>
+          <input
+            id="email"
+            formControlName="email"
+            type="email"
+            class="form-control"
+            class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          @if(signupForm.get('email')?.touched && signupForm.get('email')?.invalid){
+            <div>
+              @if(signupForm.get('email')?.hasError('required')) {
+              <small class=" text-red-600">Email is required.</small>
+              }
+              @if(signupForm.get('email')?.hasError('email')) {
+              <small class=" text-red-600">Enter a valid email.</small>
+              }
+            </div>
+            }
+        </div>
+        
+        <div>
+          <label for="password" class="block text-sm font-semibold mb-1">Password</label>
+          <input
+            id="password"
+            formControlName="password"
+            type="password"
+            class="form-control"
+            class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          @if(signupForm.get('password')?.touched && signupForm.get('password')?.invalid) {
+            <div>
+              @if(signupForm.get('password')?.hasError('required')) {
+              <small class=" text-red-600">Password is required.</small>
+              }
+              @if(signupForm.get('password')?.hasError('minlength')) {
+              <small class=" text-red-600">Minimum 6 characters required.</small>
+              }
+            </div>
+            }
+        </div>
+        
+        <button type="submit" 
+        class="w-full py-2 mt-4 text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
+        [disabled]="signupForm.invalid">SignUp</button>
+      </form>
+      @if(successMessage){
+        <p  class="mt-4 text-sm text-center text-green-600">{{ successMessage }}</p>
+      }
+       </div>
+  </div>
+  
+  
+  

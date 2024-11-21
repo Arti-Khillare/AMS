@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { AfterViewInit, Component, Input, OnInit, ViewChild } from '@angular/core';
 import { FullCalendarComponent, FullCalendarModule } from '@fullcalendar/angular';
 import { Calendar, CalendarOptions, EventInput } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
@@ -6,115 +6,40 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import listPlugin from '@fullcalendar/list';
 import bootstrapPlugin from '@fullcalendar/bootstrap';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
 import { FormsModule } from '@angular/forms';
+import emailjs from '@emailjs/browser';
+import { environment } from '../../../environments/environment.development';
 
 @Component({
-  selector: 'app-home',
+  selector: 'app-event',
   standalone: true,
-  imports: [HttpClientModule, FullCalendarModule,FormsModule],
+  imports: [FullCalendarModule, FormsModule],
   templateUrl: './add-event.component.html',
   styleUrl: './add-event.component.scss'
 })
 export class AddEventComponent implements OnInit, AfterViewInit {
   @ViewChild('calendar') calendarComponent!: FullCalendarComponent;
-  private calendarApi: Calendar | undefined
-  isMobile = false;
+  calendarApi: Calendar | undefined;
+  isEditMode = false;
+  @Input() eventData: any;
   showModal: boolean = false;
+  selectedEventId: string | undefined = undefined;
+  errorMessages: string[] = []; 
+
   modalData = {
     title: '',
     startTime: '',
     endTime: '',
     selectedDate: '',
-    email: ''
+    email: '',
+    status: "pending" 
   };
 
   
-  events: EventInput[] = [
-    {
-      title: 'MAKARA SANKRANTI',
-      start: '2024-01-15',
-      allDay: true,
-      backgroundColor: 'green'
-    },
-    {
-      title: 'REPUBLIC DAY',
-      start: '2024-01-26',
-      allDay: true,
-      backgroundColor: 'green'
-    },
-    {
-      title: 'UGADI',
-      start: '2024-04-09',
-      allDay: true,
-      backgroundColor: 'green'
-    },
-    {
-      title: 'MAY DAY',
-      start: '2024-05-01',
-      allDay: true,
-      backgroundColor: 'green'
-    },
-    {
-      title: 'BAKRI EID',
-      start: '2024-06-17',
-      allDay: true,
-      backgroundColor: 'green'
-    },
-    {
-      title: 'INDEPENDENCE DAY',
-      start: '2024-08-15',
-      allDay: true,
-      backgroundColor: 'green'
-    },
-    {
-      title: 'VINAYAKA CHATURTHI',
-      start: '2024-09-07',
-      allDay: true,
-      backgroundColor: 'green'
-    },
-    {
-      title: 'GANDHI JAYANTI',
-      start: '2024-10-02',
-      allDay: true,
-      backgroundColor: 'green'
-    },
-    {
-      title: 'VIJAYADASHMI',
-      start: '2024-10-12',
-      allDay: true,
-      backgroundColor: 'green'
-    },
-    {
-      title: 'DEEPVALI',
-      start: '2024-10-31',
-      allDay: true,
-      backgroundColor: 'green'
-    },
-    {
-      title: 'KANNADA RAJYOTSAVA',
-      start: '2024-11-01',
-      allDay: true,
-      backgroundColor: 'green'
-    },
-    {
-      title: 'CHRISTMAS',
-      start: '2024-12-25',
-      allDay: true,
-      backgroundColor: 'green'
-    }
-  ];
+  events: EventInput[] = [];
 
   calendarOptions: CalendarOptions = {
-    plugins: [
-      dayGridPlugin,
-      timeGridPlugin,
-      interactionPlugin,
-      listPlugin,
-      bootstrapPlugin
-    ],
+    plugins: [ dayGridPlugin, timeGridPlugin, interactionPlugin,listPlugin,bootstrapPlugin],
     initialView: 'dayGridMonth',
     height: 'auto',
     headerToolbar: {
@@ -138,32 +63,18 @@ export class AddEventComponent implements OnInit, AfterViewInit {
     eventBackgroundColor: 'blue',
     events: this.events,
     dateClick: (arg) => this.handleDateClick(arg),
-    eventClick: (arg: any) => this.handleEventClick(arg),
+    eventClick: (arg: any) => this.handleEventClick(arg)
   };
 
-  constructor(private http: HttpClient) {}
+  constructor() {}
 
   ngOnInit(): void {
-    console.log(this.events, "events")
+    this.getAllEventsFromSessionStorage();
+    emailjs.init(environment.emailjs.userId);
   }
 
   ngAfterViewInit() {
     this.calendarApi = this.calendarComponent.getApi();
-    let currentDate = this.calendarApi.view.currentStart;
-    console.log(currentDate);
-    this.checkScreenWidth();
-    window.addEventListener('resize', this.checkScreenWidth.bind(this));
-  }
-  eventsPromise!: Promise<EventInput[]>;
-
-  fetchAvailableSlots(): Observable<string[]> {
-    return this.http.get<string[]>('http://localhost:3000/events')
-      .pipe(
-        catchError((err) => {
-          console.error('Error:', err);
-          return of([]); 
-        })
-      );
   }
 
   handleDateClick(arg: any) {
@@ -171,27 +82,34 @@ export class AddEventComponent implements OnInit, AfterViewInit {
     const currentDate = new Date();
 
     if (clickedDate.getDay() === 0 || clickedDate.getDay() === 6) {
+      console.log('Event creation is not allowed on weekends.');
       alert('Event creation is not allowed on weekends.');
       return;
     }
 
     currentDate.setHours(0, 0, 0, 0);
-    // Check if the selected date is in the past
     if (clickedDate < currentDate) {
+      console.log('You can only create events for today or future dates.');
       alert('You can only create events for today or future dates.');
       return;
     }
 
-    if (arg.view.type === 'timeGridWeek' || arg.view.type === 'timeGridDay') {
-      console.log("check view")
-    }
     this.modalData = {
       title: '',
       startTime: '',
       endTime: '',
       selectedDate: arg.dateStr,
-      email: ''
+      email: '',
+      status: "pending" 
     };
+
+    if (arg.view.type === 'timeGridWeek' || arg.view.type === 'timeGridDay') {
+      this.modalData.selectedDate = arg.dateStr.split('T')[0]
+      this.modalData.startTime = arg.dateStr.split('T')[1].substring(0, 5);
+      console.log(this.modalData.startTime)
+      console.log(this.modalData.selectedDate)
+    }
+    this.isEditMode = false;
     this.showModal = true;
   }
 
@@ -201,64 +119,194 @@ export class AddEventComponent implements OnInit, AfterViewInit {
       startTime: arg.event.startStr.split('T')[1].substring(0, 5),
       endTime: arg.event.endStr.split('T')[1].substring(0, 5),
       selectedDate: arg.event.startStr.split('T')[0],
-      email: arg.event.extendedProps.email
+      email: arg.event.extendedProps.email,
+      status: "pending" 
     };
+    this.selectedEventId = arg.event.id;
+    this.isEditMode = true;
     this.showModal = true;
   }
 
-  isValidTimeFormat(time: string): boolean {
-    const regex = /^([01]\d|2[0-3]):([0-5]\d)$/;
-    return regex.test(time);
-  }
-
-  checkScreenWidth() {
-    this.isMobile = window.innerWidth < 768;
-  }
-
-
-  closeModal(): void {
+  closeModal() {
     this.showModal = false;
+    this.resetModalData();
+    this.errorMessages = []
+  }
+
+  resetModalData() {
+    this.modalData = {
+      title: '',
+      startTime: '',
+      endTime: '',
+      selectedDate: '',
+      email: '',
+      status: "pending" 
+    };
+    this.selectedEventId = undefined;
+    this.isEditMode = false;
+  }
+
+  sendEventEmail(event: any) {
+    console.log('Sending event email to:', event.email);
+    
+    const templateParams = {
+      to_email: event.email,
+      to_name: event.email.split('@')[0],
+      event_title: event.title,
+      event_date: new Date(event.selectedDate).toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      }),
+      event_time_start: event.startTime,
+      event_time_end: event.endTime,
+      from_name: 'Appointment System'
+    };
+
+    try {
+      const response =  emailjs.send(
+        environment.emailjs.serviceId,
+        environment.emailjs.TemplateID,
+        templateParams,
+        environment.emailjs.userId
+      );
+
+      console.log('Email sent successfully:', response);
+      console.log('Event notification email sent successfully!');
+    } catch (error) {
+      console.error('Failed to send email:', error);
+      console.log('Failed to send event notification email.');
+    }
+  }
+
+  saveEventsToSessionStorage() {
+    sessionStorage.setItem('calenderEvents', JSON.stringify(this.events));
+  }
+
+  getAllEventsFromSessionStorage() {
+    const savedEvents = sessionStorage.getItem('calenderEvents');
+    if (savedEvents) {
+      this.events = JSON.parse(savedEvents);
+      this.calendarOptions.events = this.events;
+    }
   }
 
   createEventInCalendar(event: any) {
+
     const newEvent: EventInput = {
+      id: `${new Date().getTime()}`,
       title: event.title,
       start: `${event.selectedDate}T${event.startTime}:00`,
       end: `${event.selectedDate}T${event.endTime}:00`,
       allDay: false,
       backgroundColor: 'blue',
-      extendedProps: { email: event.email }
+      extendedProps: { email: event.email },
+      status: "pending" 
     };
-    console.log(newEvent, "newEvent");
 
+    console.log("Selected Date:", event.selectedDate);
+    console.log("Start Time:", event.startTime);
+    console.log("End Time:", event.endTime);
 
     if (this.calendarComponent) {
       const calendarApi = this.calendarComponent.getApi();
-      calendarApi.addEvent(newEvent); 
-      this.events.push(newEvent);      
+      calendarApi.addEvent(newEvent);
+      this.events.push(newEvent);
       console.log('Event successfully added to the calendar:', newEvent);
+      this.saveEventsToSessionStorage();
+      console.log('Event created successfully!');
+      return true;
+    }
+    return false;
+  }
+
+  updateExistingEvent(eventDetails: any) {
+    const calendarApi = this.calendarComponent.getApi();
+    const eventToUpdate = calendarApi.getEventById(this.selectedEventId!);
+
+    if (eventToUpdate) {
+      eventToUpdate.setProp('title', eventDetails.title);
+      eventToUpdate.setExtendedProp('email', eventDetails.email);
+      eventToUpdate.setDates(
+        `${eventDetails.selectedDate}T${eventDetails.startTime}:00`,
+        `${eventDetails.selectedDate}T${eventDetails.endTime}:00`
+      );
+
+      const index = this.events.findIndex(event => event.id === this.selectedEventId);
+      if (index !== -1) {
+        this.events[index] = {
+          ...this.events[index],
+          title: eventDetails.title,
+          start: `${eventDetails.selectedDate}T${eventDetails.startTime}:00`,
+          end: `${eventDetails.selectedDate}T${eventDetails.endTime}:00`,
+          extendedProps: { email: eventDetails.email }
+        };
+      }
+
+      this.saveEventsToSessionStorage();
+      this.sendEventEmail(eventDetails);
+      console.log('Event updated successfully!');
+    }
+  }
+
+  onSubmit(){
+    this.errorMessages = this.validateEventDetails();
+
+    if (this.errorMessages.length === 0) {
+      const eventDetails = {
+            title: this.modalData.title,
+            startTime: this.modalData.startTime,
+            endTime: this.modalData.endTime,
+            selectedDate: this.modalData.selectedDate,
+            email: this.modalData.email,
+            status: this.modalData.status
+          };
+      if (this.isEditMode && this.selectedEventId) {
+        this.updateExistingEvent(eventDetails);
+      } else {
+        if(this.createEventInCalendar(eventDetails)) {
+         this.sendEventEmail(eventDetails);
+        }
+      }
+      this.closeModal();
     }
   }
   
+  validateEventDetails(): string[]  {
 
-  sendEventEmail(event: any) {
-    console.log('Sending event email to:', event.email);
+    const errors: string[] = [];
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(this.modalData.email)) {
+      console.log('Please enter a valid email address');
+      errors.push('Invalid email format.')
+    }
+
+    if (this.modalData.startTime && this.modalData.endTime) {
+        const startTime = new Date(`${this.modalData.selectedDate}T${this.modalData.startTime}`);
+        const endTime = new Date(`${this.modalData.selectedDate}T${this.modalData.endTime}`);
+        if (endTime <= startTime) {
+          console.log('End time must be after start time');
+          errors.push('End time must be after start time.');
+        }
+    }
+
+    // validation: If the selected date is today, check if the start time has already passed
+    const selectedDate = new Date(this.modalData.selectedDate);
+    const currentDate = new Date();
+
+    if (selectedDate.toDateString() === currentDate.toDateString()) {
+      const [startHours, startMinutes] = this.modalData.startTime.split(':').map(Number);
+      const selectedStartTime = new Date();
+      selectedStartTime.setHours(startHours, startMinutes, 0, 0);
+
+      if (selectedStartTime < new Date()) {
+        console.log('The selected start time has already passed. Please select a future time.');
+        errors.push('The selected start time has already passed. Please select a future time.');
+      }
+    }
+    return errors;
   }
 
-  onSubmit(): void {
-    const newEvent = {
-      title: this.modalData.title,
-      startTime: this.modalData.startTime,
-      endTime: this.modalData.endTime,
-      selectedDate: this.modalData.selectedDate,
-      email: this.modalData.email
-    };
-
-    console.log(newEvent,"newEventsubmit"), 
-    this.createEventInCalendar(newEvent);
-    this.sendEventEmail(newEvent);
-    console.log('Event created:', this.modalData);
-    this.closeModal();
-  }
-  
 }

@@ -14,10 +14,7 @@ export class HeaderComponent {
   constructor(private router: Router, private authService: AuthService) {}
 
   logout(): void {
-    this.authService.logout(); // Call the logout method from AuthService
+    this.authService.logout(); 
   }
 
-  openAddEvent(): void {
-    this.router.navigate(['add-events']);
-  }
 }

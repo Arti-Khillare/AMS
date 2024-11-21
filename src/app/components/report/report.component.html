@@ -1,0 +1,41 @@
+<div class="p-8 my-3 rounded-lg shadow-lg w-full">
+    <h3 class="text-base font-semibold text-blue-600 mb-4">Scheduled Appointments</h3>
+  
+    <div *ngIf="events && events.length > 0; else noEvents">
+      <div class="overflow-x-auto">
+        <table class="min-w-full bg-white shadow-md rounded-lg">
+          <thead>
+            <tr class="bg-blue-500 text-white">
+              <th class="px-4 py-2 text-left">Event Title</th>
+              <th class="px-4 py-2 text-left">Date</th>
+              <th class="px-4 py-2 text-left">Start Time</th>
+              <th class="px-4 py-2 text-left">End Time</th>
+              <th class="px-4 py-2 text-left">Guest Email</th>
+              <th class="px-4 py-2 text-left">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let event of events">
+              <td class="px-4 py-2">{{ event.title | uppercase }}</td>
+              <td class="px-4 py-2">{{ event.start | date: 'fullDate' }}</td>
+              <td class="px-4 py-2">{{ event.start | date: 'shortTime' }}</td>
+              <td class="px-4 py-2">{{ event.end | date: 'shortTime' }}</td>
+              <td class="px-4 py-2" *ngIf="event.extendedProps?.email">{{ event.extendedProps.email }}</td>
+              <td class="px-4 py-2">
+                <select [(ngModel)]="event.status" (change)="updateStatus(event)" class="border px-2 py-1 rounded-md">
+                  <option value="confirmed" [selected]="event.status === 'confirmed'">Confirmed</option>
+                  <option value="paid" [selected]="event.status === 'paid'">Paid</option>
+                  <option value="cancelled" [selected]="event.status === 'cancelled'">Cancelled</option>
+                </select>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  
+    <ng-template #noEvents>
+      <p class="text-gray-700">No scheduled appointments found. Please create new events.</p>
+    </ng-template>
+  </div>
+  

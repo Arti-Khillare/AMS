@@ -1,49 +1,57 @@
 <div class="flex items-center w-screen justify-center min-h-screen bg-gray-100">
   <div class="w-96 p-8 bg-white border rounded-lg shadow-lg">
     <h2 class="text-3xl font-bold text-center mb-6">Login</h2>
-    <form 
-    class="space-y-4">
+    <form [formGroup]="signinForm" (ngSubmit)="login()" class="space-y-4">
       <div>
         <label for="email" class="block text-sm font-semibold mb-1">Email</label>
         <input
           id="email"
+          formControlName="email"
           type="email"
-          [(ngModel)]="email"
-          name="email"
-          required
-          class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          class="form-control w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
+        @if(signinForm.get('email')?.touched && signinForm.get('email')?.invalid) {
+          <div>
+            @if(signinForm.get('email')?.hasError('required')) {
+            <small class=" text-red-600">Email is required.</small>
+            }
+            @if(signinForm.get('email')?.hasError('email')) {
+              <small class=" text-red-600">Enter a valid email.</small>
+              }
+          </div>
+          }
       </div>
-      
       <div>
         <label for="password" class="block text-sm font-semibold mb-1">Password</label>
         <input
           id="password"
+          formControlName="password"
           type="password"
-          [(ngModel)]="password"
-          name="password"
-          required
-          class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          class="form-control w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
+        @if(signinForm.get('password')?.touched && signinForm.get('password')?.invalid) {
+          <div>
+            @if(signinForm.get('password')?.hasError('required')) {
+            <small class=" text-red-600">Password is required.</small>
+            }
+            @if(signinForm.get('password')?.hasError('minlength')) {
+            <small class=" text-red-600">Minimum 6 characters required.</small>
+            }
+          </div>
+          }
       </div>
-      
-      <button
-        type="submit"
-        class="w-full py-2 mt-4 text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
-      >
-        Login
-      </button>
+      <button type="submit" 
+      class="w-full py-2 mt-4 text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
+      [disabled]="signinForm.invalid"
+      >Login</button>
     </form>
     @if(errorMessage){
       <p  class="mt-4 text-sm text-center text-red-600">{{ errorMessage }}</p>
     }
-    
-    <button
-      (click)="googleLogin()"
-      class="w-full mt-6 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors"
-    >
-      Login with Google
-    </button>
+    <button (click)="googleLogin()" class="w-full mt-6 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors"
+    > Login with Google </button>
+    <p class="text-center mt-4">If you don't have signup yet, please signup</p>
+    <button (click)="redirectToSignup()" class="w-full mt-6 py-2 bg-green-400 text-white rounded-md hover:bg-green-600">Signup</button>
   </div>
 </div>
 
