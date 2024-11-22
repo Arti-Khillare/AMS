@@ -5,6 +5,7 @@ import { HomeComponent } from './components/home/home.component';
 import { PagenotfoundComponent } from './layout/pagenotfound/pagenotfound.component';
 import { ReportComponent } from './components/report/report.component';
 import { SignupComponent } from './auth/signup/signup.component';
+import { authGuard } from './auth/auth.guard';
 
 export const routes: Routes = [
   {
@@ -17,15 +18,21 @@ export const routes: Routes = [
   },
   {
     path: 'add-events',
-    component: AddEventComponent
+    component: AddEventComponent,
+    canActivate : [authGuard],
+    data: { roles: ['user'] }
   },
   {
     path: 'reports',
-    component: ReportComponent
+    component: ReportComponent,
+    canActivate : [authGuard],
+    data: { roles: ['admin'] }
   },
   {
     path: 'home',
-    component: HomeComponent
+    component: HomeComponent,
+    canActivate : [authGuard],
+    data: { roles: ['user', 'admin'] }
   },
   {
     path: '',

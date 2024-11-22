@@ -16,13 +16,13 @@ export class AuthService {
   constructor(private router: Router, private auth: Auth, private http: HttpClient,) {}
 
   // Checks if user data exists in localStorage
-  hasValidUser(): boolean {
+  hasValidUser() {
     const user = localStorage.getItem(this.USER_KEY);
     return !!user;
   }
 
   // Google login
-  googleLogin(): Promise<void> {
+  googleLogin(){
     const provider = new GoogleAuthProvider();
     return signInWithPopup(this.auth, provider)
       .then((result) => {
@@ -38,7 +38,7 @@ export class AuthService {
   }
 
   // Save user info to localStorage
-  saveUserData(user: any, role : any): void {
+  saveUserData(user: any, role : any){
     const userData = {
       uid: user.uid,
       displayName: user.displayName,
@@ -82,7 +82,7 @@ export class AuthService {
   }
   
   // Logout
-  logout(): void {
+  logout(){
     localStorage.removeItem(this.USER_KEY); 
     this.loggedIn.next(false); 
     this.router.navigate(['/login']); 

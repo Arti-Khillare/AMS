@@ -1,6 +1,6 @@
-import { AfterViewInit, Component, Input, OnInit, ViewChild } from '@angular/core';
+import {  Component, OnInit, ViewChild } from '@angular/core';
 import { FullCalendarComponent, FullCalendarModule } from '@fullcalendar/angular';
-import { Calendar, CalendarOptions, EventInput } from '@fullcalendar/core';
+import { CalendarOptions, EventInput } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
@@ -17,11 +17,9 @@ import { environment } from '../../../environments/environment.development';
   templateUrl: './add-event.component.html',
   styleUrl: './add-event.component.scss'
 })
-export class AddEventComponent implements OnInit, AfterViewInit {
+export class AddEventComponent implements OnInit {
   @ViewChild('calendar') calendarComponent!: FullCalendarComponent;
-  calendarApi: Calendar | undefined;
   isEditMode = false;
-  @Input() eventData: any;
   showModal: boolean = false;
   selectedEventId: string | undefined = undefined;
   errorMessages: string[] = []; 
@@ -71,10 +69,6 @@ export class AddEventComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.getAllEventsFromSessionStorage();
     emailjs.init(environment.emailjs.userId);
-  }
-
-  ngAfterViewInit() {
-    this.calendarApi = this.calendarComponent.getApi();
   }
 
   handleDateClick(arg: any) {

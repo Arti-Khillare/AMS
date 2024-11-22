@@ -3,7 +3,7 @@ import { EventInput } from '@fullcalendar/core';
 import { CommonModule, DatePipe } from '@angular/common'; 
 import { AppService } from '../../services/app.service'
 import { FormsModule } from '@angular/forms';
-import { AuthService } from '../../auth/auth.service';
+import { AuthService } from '../../auth/auth.service'; 
 
 @Component({
   selector: 'app-home',
@@ -21,7 +21,6 @@ export class HomeComponent implements OnInit{
   selectedEvent: any = null;
   selectedEventId: string | undefined = undefined;
   userRole : any
-  
 
   constructor(private appService: AppService, private datePipe: DatePipe, private authService: AuthService) {}
 
@@ -33,8 +32,6 @@ export class HomeComponent implements OnInit{
     console.log(this.userRole)
 
   }
-
-  
 
   editEvent(event: EventInput) {
     this.selectedEvent = JSON.parse(JSON.stringify(event));
@@ -78,18 +75,16 @@ export class HomeComponent implements OnInit{
     }
   }
 
-  
   saveEditedEvent() {
     const index = this.events.findIndex(event => event.id === this.selectedEvent.id);
+    console.log(index)
     if (index !== -1) {
         this.events[index] = { ...this.selectedEvent } ; 
         console.log(this.events[index])
-        sessionStorage.setItem('calenderEvents', JSON.stringify(this.events));
+        // sessionStorage.setItem('calenderEvents', JSON.stringify(this.events));
         this.closeEditModal();
     }
     console.log('Event updated successfully!', this.events);
   }
   
-  
-
 }
