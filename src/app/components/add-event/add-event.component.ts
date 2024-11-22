@@ -23,6 +23,7 @@ export class AddEventComponent implements OnInit {
   showModal: boolean = false;
   selectedEventId: string | undefined = undefined;
   errorMessages: string[] = []; 
+  events: EventInput[] = [];
 
   modalData = {
     title: '',
@@ -32,9 +33,6 @@ export class AddEventComponent implements OnInit {
     email: '',
     status: "pending" 
   };
-
-  
-  events: EventInput[] = [];
 
   calendarOptions: CalendarOptions = {
     plugins: [ dayGridPlugin, timeGridPlugin, interactionPlugin,listPlugin,bootstrapPlugin],

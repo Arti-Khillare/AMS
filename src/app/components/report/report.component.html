@@ -16,7 +16,7 @@
           </thead>
           <tbody>
             <tr *ngFor="let event of events">
-              <td class="px-4 py-2">{{ event.title | uppercase }}</td>
+              <td class="px-4 py-2">{{ event.title | titlecase  }}</td>
               <td class="px-4 py-2">{{ event.start | date: 'fullDate' }}</td>
               <td class="px-4 py-2">{{ event.start | date: 'shortTime' }}</td>
               <td class="px-4 py-2">{{ event.end | date: 'shortTime' }}</td>
